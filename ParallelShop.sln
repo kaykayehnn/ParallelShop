@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ParallelShop", "ParallelShop\ParallelShop.csproj", "{1009902C-0CF3-4D10-90E2-C18A37086586}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelShopTests", "ParallelShopTests\ParallelShopTests.csproj", "{2DCB66F9-CF50-49A0-A850-2DE2DF6E6BB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1009902C-0CF3-4D10-90E2-C18A37086586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1009902C-0CF3-4D10-90E2-C18A37086586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1009902C-0CF3-4D10-90E2-C18A37086586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1009902C-0CF3-4D10-90E2-C18A37086586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DCB66F9-CF50-49A0-A850-2DE2DF6E6BB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DCB66F9-CF50-49A0-A850-2DE2DF6E6BB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DCB66F9-CF50-49A0-A850-2DE2DF6E6BB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DCB66F9-CF50-49A0-A850-2DE2DF6E6BB5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C96A0D77-3B69-445F-8B0D-B343B687C036}
+	EndGlobalSection
+EndGlobal
