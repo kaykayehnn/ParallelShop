@@ -4,10 +4,11 @@ using ParallelShop;
 
 namespace ParallelShopTests
 {
-    public class ParallelShopTests
+    public class ParallelShopProcessorTests
     {
         private ParallelShopProcessor psp;
         private Product[] products;
+
         [SetUp]
         public void Setup()
         {
