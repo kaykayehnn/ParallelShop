@@ -12,8 +12,8 @@ namespace ParallelShopTests
         [SetUp]
         public void Setup()
         {
-            psp = new ParallelShopProcessor(new Shop());
-            
+            psp = new ParallelShopProcessor(new Shop(), 100, 5);
+
             // It is important that all products are unique for the tests.
             products = new[]
             {
