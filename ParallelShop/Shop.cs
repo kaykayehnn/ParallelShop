@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ParallelShop
 {
@@ -33,10 +34,29 @@ namespace ParallelShop
 
         public Dictionary<Product, double> GetAvailableProducts()
         {
-            lock (this.products)
+            lock (this.productLocks)
             {
-                var copy = new Dictionary<Product, double>(this.products);
-                return copy;
+                try
+                {
+                    // Lock all rows of the dictionary
+                    foreach (var productLock in productLocks)
+                    {
+                        Monitor.Enter(productLock.Key);
+                    }
+
+                    // Now that no changes can be made to the dictionary, clone it
+                    // and return the new copy.
+                    var copy = new Dictionary<Product, double>(this.products);
+                    return copy;
+                }
+                finally
+                {
+                    // Unlock all rows
+                    foreach (var productLock in productLocks)
+                    {
+                        Monitor.Exit(productLock.Key);
+                    }
+                }
             }
         }
 
