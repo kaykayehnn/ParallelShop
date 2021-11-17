@@ -8,6 +8,11 @@ namespace ParallelShop
     {
         // Stores products and available quantities
         private Dictionary<Product, double> products;
+        // ProductLocks acts as an intermediary before acquiring any row locks.
+        // In order to acquire a row lock, we MUST first lock productLocks and
+        // fetch the required locks.
+        // This ensures it is not possible to modify existing rows while an add
+        // operation is in progress.
         private Dictionary<Product, object> productLocks;
 
         public Shop()
@@ -34,30 +39,13 @@ namespace ParallelShop
 
         public Dictionary<Product, double> GetAvailableProducts()
         {
-            lock (this.productLocks)
+            return LockAllProducts(() =>
             {
-                try
-                {
-                    // Lock all rows of the dictionary
-                    foreach (var productLock in productLocks)
-                    {
-                        Monitor.Enter(productLock.Key);
-                    }
-
-                    // Now that no changes can be made to the dictionary, clone it
-                    // and return the new copy.
-                    var copy = new Dictionary<Product, double>(this.products);
-                    return copy;
-                }
-                finally
-                {
-                    // Unlock all rows
-                    foreach (var productLock in productLocks)
-                    {
-                        Monitor.Exit(productLock.Key);
-                    }
-                }
-            }
+                // Now that no changes can be made to the dictionary, clone it
+                // and return the new copy.
+                var copy = new Dictionary<Product, double>(this.products);
+                return copy;
+            });
         }
 
         private void AddProduct(ProductShipment shipment)
@@ -82,9 +70,15 @@ namespace ParallelShop
                 // the product and add it to the dictionary.
                 if (!containsProduct)
                 {
-                    lockObj = new object();
-                    this.productLocks[product] = lockObj;
-                    this.products[product] = 0;
+                    // We are modifying the products dictionary so we have to lock
+                    // all product rows in order to insert a new product.
+                    lockObj = LockAllProducts(() =>
+                    {
+                        lockObj = new object();
+                        this.productLocks[product] = lockObj;
+                        this.products[product] = 0;
+                        return lockObj;
+                    });
                 }
             }
 
@@ -100,6 +94,32 @@ Available quantity: {value}");
                 }
 
                 this.products[product] = value + quantityChange;
+            }
+        }
+
+        private T LockAllProducts<T>(Func<T> func)
+        {
+            // Prevent any threads from acquiring any lock objects until we are done.
+            lock (this.productLocks)
+            {
+                try
+                {
+                    // Lock all rows of the dictionary, thus locking the entire dictionary
+                    foreach (var productLock in productLocks)
+                    {
+                        Monitor.Enter(productLock.Key);
+                    }
+
+                    return func();
+                }
+                finally
+                {
+                    // Unlock all rows
+                    foreach (var productLock in productLocks)
+                    {
+                        Monitor.Exit(productLock.Key);
+                    }
+                }
             }
         }
     }
