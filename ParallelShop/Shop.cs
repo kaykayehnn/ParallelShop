@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace ParallelShop
@@ -102,12 +103,18 @@ Available quantity: {value}");
             // Prevent any threads from acquiring any lock objects until we are done.
             lock (this.productLocks)
             {
+                // Keep the initially locked rows in an array, in order not to
+                // call Monitor.Exit with locks which had not been locked previously.
+                Product[] rowsToLock = null;
                 try
                 {
+                    rowsToLock = productLocks
+                        .Select(kvp => kvp.Key)
+                        .ToArray();
                     // Lock all rows of the dictionary, thus locking the entire dictionary
-                    foreach (var productLock in productLocks)
+                    foreach (var productLock in rowsToLock)
                     {
-                        Monitor.Enter(productLock.Key);
+                        Monitor.Enter(productLock);
                     }
 
                     return func();
@@ -115,9 +122,9 @@ Available quantity: {value}");
                 finally
                 {
                     // Unlock all rows
-                    foreach (var productLock in productLocks)
+                    foreach (var productLock in rowsToLock)
                     {
-                        Monitor.Exit(productLock.Key);
+                        Monitor.Exit(productLock);
                     }
                 }
             }
